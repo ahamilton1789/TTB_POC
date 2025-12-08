@@ -19,7 +19,7 @@ This application simulates the TTB (Alcohol and Tobacco Tax and Trade Bureau) la
 ## Technology Stack
 - **Frontend**: React with Tailwind CSS
 - **AI/Vision**: Anthropic Claude API (vision capabilities)
-- **Deployment**: [Your choice - Vercel, Netlify, etc.]
+- **Deployment**: Netlify
 
 ## Local Development
 
