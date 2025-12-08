@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTB Label Verification - Test Scenarios Demo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .scenario-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-number {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .scenario-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-partial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .scenario-description {
+            color: #64748b;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .demo-preview {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-data {
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+        
+        .form-data strong {
+            color: #1e293b;
+            display: inline-block;
+            width: 140px;
+        }
+        
+        .form-data span {
+            color: #64748b;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .label-preview {
+            width: 100%;
+            height: 200px;
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .label-preview svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .results-preview {
+            border-top: 2px solid #e2e8f0;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .check-icon {
+            color: #10b981;
+            flex-shrink: 0;
+        }
+        
+        .x-icon {
+            color: #ef4444;
+            flex-shrink: 0;
+        }
+        
+        .result-text {
+            color: #475569;
+        }
+        
+        .play-button {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+        
+        .play-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(79, 70, 229, 0.4);
+        }
+        
+        .animation-container {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e1;
+        }
+        
+        .animation-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #6366f1);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        
+        .animation-step {
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.3;
+            transition: all 0.3s ease;
+        }
+        
+        .animation-step.active {
+            opacity: 1;
+            background: #eff6ff;
+            border: 2px solid #4f46e5;
+        }
+        
+        .animation-step.completed {
+            opacity: 1;
+        }
+        
+        .step-number {
+            background: #e2e8f0;
+            color: #64748b;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .animation-step.active .step-number {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .animation-step.completed .step-number {
+            background: #10b981;
+            color: white;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4f46e5;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 TTB Label Verification Demo</h1>
+        <p class="subtitle">Interactive Test Scenarios</p>
+        
+        <div class="scenarios-grid">
+            <!-- Scenario 1: Perfect Match -->
+            <div class="scenario-card" data-scenario="1">
+                <span class="status-badge status-success">✓ Success</span>
+                <div class="scenario-header">
+                    <div class="scenario-number">1</div>
+                    <h3 class="scenario-title">Perfect Match</h3>
+                </div>
+                <p class="scenario-description">
+                    All label information matches the submitted form data exactly. The verification passes successfully.
+                </p>
+                
+                <div class="demo-preview">
+                    <div class="form-data"><strong>Brand Name:</strong> <span>Jack's Whiskey</span></div>
+                    <div class="form-data"><strong>Product Type:</strong> <span>Bourbon Whiskey</span></div>
+                    <div class="form-data"><strong>Alcohol:</strong> <span>40%</span></div>
+                    <div class="form-data"><strong>Net Contents:</strong> <span>750 mL</span></div>
+                    
+                    <div class="label-preview">
+                        <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="300" height="400" fill="#f8f4e8"/>
+                            <text x="150" y="80" font-family="serif" font-size="32" font-weight="bold" fill="#2c1810" text-anchor="middle">JACK'S WHISKEY</text>
+                            <text x="150" y="140" font-family="serif" font-size="18" fill="#5c4033" text-anchor="middle">BOURBON WHISKEY</text>
+                            <text x="150" y="200" font-family="sans-serif" font-size="24" font-weight="bold" fill="#2c1810" text-anchor="middle">40% ALC/VOL</text>
+                            <text x="150" y="240" font-family="sans-serif" font-size="16" fill="#5c4033" text-anchor="middle">750 mL</text>
+                            <rect x="20" y="300" width="260" height="80" fill="#f5e6d3"/>
+                            <text x="150" y="325" font-family="sans-serif" font-size="7" fill="#666" text-anchor="middle">GOVERNMENT WARNING: (1) ACCORDING TO THE</text>
+                            <text x="150" y="340" font-family="sans-serif" font-size="7" fill="#666" text-anchor="middle">SURGEON GENERAL, WOMEN SHOULD NOT DRINK</text>
+                            <text x="150" y="355" font-family="sans-serif" font-size="7" fill="#666" text-anchor="middle">ALCOHOLIC BEVERAGES DURING PREGNANCY BECAUSE</text>
+                            <text x="150" y="370" font-family="sans-serif" font-size="7" fill="#666" text-anchor="middle">OF THE RISK OF BIRTH DEFECTS...</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="results-preview">
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Brand Name matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Product Type matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Alcohol Content matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Government Warning present</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="play-button" onclick="playScenario(1)">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
+                    </svg>
+                    Simulate Scenario
+                </button>
+                
+                <div class="animation-container" id="animation-1">
+                    <div class="progress-bar"><div class="progress-fill" id="progress-1"></div></div>
+                    <div class="animation-step"><div class="step-number">1</div><div>Uploading label image...</div></div>
+                    <div class="animation-step"><div class="step-number">2</div><div>Filling form data...</div></div>
+                    <div class="animation-step"><div class="step-number">3</div><div>Analyzing with Claude Vision API...</div></div>
+                    <div class="animation-step"><div class="step-number">4</div><div>Extracting text from label...</div></div>
+                    <div class="animation-step"><div class="step-number">5</div><div>Comparing data...</div></div>
+                    <div class="animation-step"><div class="step-number">6</div><div>✓ Verification Successful!</div></div>
+                </div>
+            </div>
+            
+            <!-- Scenario 2: Brand Name Mismatch -->
+            <div class="scenario-card" data-scenario="2">
+                <span class="status-badge status-error">✗ Failed</span>
+                <div class="scenario-header">
+                    <div class="scenario-number">2</div>
+                    <h3 class="scenario-title">Brand Name Mismatch</h3>
+                </div>
+                <p class="scenario-description">
+                    The brand name on the label doesn't match what was submitted in the form.
+                </p>
+                
+                <div class="demo-preview">
+                    <div class="form-data"><strong>Brand Name:</strong> <span>Old Tom Distillery</span></div>
+                    <div class="form-data"><strong>Product Type:</strong> <span>Bourbon Whiskey</span></div>
+                    <div class="form-data"><strong>Alcohol:</strong> <span>45%</span></div>
+                    
+                    <div class="label-preview">
+                        <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="300" height="400" fill="#f8f4e8"/>
+                            <rect x="30" y="50" width="240" height="60" fill="rgba(239, 68, 68, 0.1)" stroke="#ef4444" stroke-width="2"/>
+                            <text x="150" y="90" font-family="serif" font-size="28" font-weight="bold" fill="#2c1810" text-anchor="middle">OLD TOM</text>
+                            <text x="150" y="160" font-family="serif" font-size="18" fill="#5c4033" text-anchor="middle">BOURBON WHISKEY</text>
+                            <text x="150" y="220" font-family="sans-serif" font-size="24" font-weight="bold" fill="#2c1810" text-anchor="middle">45% ALC/VOL</text>
+                            <rect x="20" y="300" width="260" height="80" fill="#f5e6d3"/>
+                            <text x="150" y="325" font-family="sans-serif" font-size="7" fill="#666" text-anchor="middle">GOVERNMENT WARNING...</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="results-preview">
+                        <div class="result-item">
+                            <span class="x-icon">✗</span>
+                            <span class="result-text">Brand Name mismatch: "OLD TOM" vs "Old Tom Distillery"</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Product Type matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Alcohol Content matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Government Warning present</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="play-button" onclick="playScenario(2)">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
+                    </svg>
+                    Simulate Scenario
+                </button>
+                
+                <div class="animation-container" id="animation-2">
+                    <div class="progress-bar"><div class="progress-fill" id="progress-2"></div></div>
+                    <div class="animation-step"><div class="step-number">1</div><div>Uploading label image...</div></div>
+                    <div class="animation-step"><div class="step-number">2</div><div>Filling form data...</div></div>
+                    <div class="animation-step"><div class="step-number">3</div><div>Analyzing with Claude Vision API...</div></div>
+                    <div class="animation-step"><div class="step-number">4</div><div>Extracting text from label...</div></div>
+                    <div class="animation-step"><div class="step-number">5</div><div>Comparing data...</div></div>
+                    <div class="animation-step"><div class="step-number">6</div><div>✗ Brand Name Mismatch Detected!</div></div>
+                </div>
+            </div>
+            
+            <!-- Scenario 3: Missing Government Warning -->
+            <div class="scenario-card" data-scenario="3">
+                <span class="status-badge status-error">✗ Failed</span>
+                <div class="scenario-header">
+                    <div class="scenario-number">3</div>
+                    <h3 class="scenario-title">Missing Warning</h3>
+                </div>
+                <p class="scenario-description">
+                    The required government warning statement is missing from the label.
+                </p>
+                
+                <div class="demo-preview">
+                    <div class="form-data"><strong>Brand Name:</strong> <span>Premium Vodka</span></div>
+                    <div class="form-data"><strong>Product Type:</strong> <span>Vodka</span></div>
+                    <div class="form-data"><strong>Alcohol:</strong> <span>40%</span></div>
+                    
+                    <div class="label-preview">
+                        <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="300" height="400" fill="#e8f4f8"/>
+                            <text x="150" y="100" font-family="serif" font-size="32" font-weight="bold" fill="#1e3a5f" text-anchor="middle">PREMIUM</text>
+                            <text x="150" y="140" font-family="serif" font-size="32" font-weight="bold" fill="#1e3a5f" text-anchor="middle">VODKA</text>
+                            <text x="150" y="200" font-family="serif" font-size="16" fill="#5c7080" text-anchor="middle">VODKA</text>
+                            <text x="150" y="260" font-family="sans-serif" font-size="24" font-weight="bold" fill="#1e3a5f" text-anchor="middle">40% ALC/VOL</text>
+                            <rect x="30" y="310" width="240" height="60" fill="rgba(239, 68, 68, 0.1)" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,5"/>
+                            <text x="150" y="345" font-family="sans-serif" font-size="12" fill="#ef4444" text-anchor="middle">⚠ WARNING MISSING</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="results-preview">
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Brand Name matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Product Type matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Alcohol Content matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="x-icon">✗</span>
+                            <span class="result-text">Government Warning is missing</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="play-button" onclick="playScenario(3)">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
+                    </svg>
+                    Simulate Scenario
+                </button>
+                
+                <div class="animation-container" id="animation-3">
+                    <div class="progress-bar"><div class="progress-fill" id="progress-3"></div></div>
+                    <div class="animation-step"><div class="step-number">1</div><div>Uploading label image...</div></div>
+                    <div class="animation-step"><div class="step-number">2</div><div>Filling form data...</div></div>
+                    <div class="animation-step"><div class="step-number">3</div><div>Analyzing with Claude Vision API...</div></div>
+                    <div class="animation-step"><div class="step-number">4</div><div>Extracting text from label...</div></div>
+                    <div class="animation-step"><div class="step-number">5</div><div>Checking for government warning...</div></div>
+                    <div class="animation-step"><div class="step-number">6</div><div>✗ Required Warning Missing!</div></div>
+                </div>
+            </div>
+            
+            <!-- Scenario 4: Wrong Alcohol Content -->
+            <div class="scenario-card" data-scenario="4">
+                <span class="status-badge status-error">✗ Failed</span>
+                <div class="scenario-header">
+                    <div class="scenario-number">4</div>
+                    <h3 class="scenario-title">Alcohol Content Error</h3>
+                </div>
+                <p class="scenario-description">
+                    The alcohol percentage on the label doesn't match the submitted value.
+                </p>
+                
+                <div class="demo-preview">
+                    <div class="form-data"><strong>Brand Name:</strong> <span>Mountain Rum</span></div>
+                    <div class="form-data"><strong>Product Type:</strong> <span>Rum</span></div>
+                    <div class="form-data"><strong>Alcohol:</strong> <span>50%</span></div>
+                    
+                    <div class="label-preview">
+                        <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="300" height="400" fill="#f5f0e8"/>
+                            <text x="150" y="90" font-family="serif" font-size="30" font-weight="bold" fill="#3d2817" text-anchor="middle">MOUNTAIN RUM</text>
+                            <text x="150" y="150" font-family="serif" font-size="18" fill="#6b4423" text-anchor="middle">RUM</text>
+                            <rect x="90" y="175" width="120" height="50" fill="rgba(239, 68, 68, 0.1)" stroke="#ef4444" stroke-width="2"/>
+                            <text x="150" y="210" font-family="sans-serif" font-size="28" font-weight="bold" fill="#3d2817" text-anchor="middle">40% ALC/VOL</text>
+                            <rect x="20" y="300" width="260" height="80" fill="#f5e6d3"/>
+                            <text x="150" y="325" font-family="sans-serif" font-size="7" fill="#666" text-anchor="middle">GOVERNMENT WARNING...</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="results-preview">
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Brand Name matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Product Type matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="x-icon">✗</span>
+                            <span class="result-text">Alcohol Content mismatch: 40% vs 50%</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Government Warning present</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="play-button" onclick="playScenario(4)">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
+                    </svg>
+                    Simulate Scenario
+                </button>
+                
+                <div class="animation-container" id="animation-4">
+                    <div class="progress-bar"><div class="progress-fill" id="progress-4"></div></div>
+                    <div class="animation-step"><div class="step-number">1</div><div>Uploading label image...</div></div>
+                    <div class="animation-step"><div class="step-number">2</div><div>Filling form data...</div></div>
+                    <div class="animation-step"><div class="step-number">3</div><div>Analyzing with Claude Vision API...</div></div>
+                    <div class="animation-step"><div class="step-number">4</div><div>Extracting alcohol content...</div></div>
+                    <div class="animation-step"><div class="step-number">5</div><div>Comparing values...</div></div>
+                    <div class="animation-step"><div class="step-number">6</div><div>✗ Alcohol Content Mismatch!</div></div>
+                </div>
+            </div>
+            
+            <!-- Scenario 5: Multiple Errors -->
+            <div class="scenario-card" data-scenario="5">
+                <span class="status-badge status-error">✗ Failed</span>
+                <div class="scenario-header">
+                    <div class="scenario-number">5</div>
+                    <h3 class="scenario-title">Multiple Errors</h3>
+                </div>
+                <p class="scenario-description">
+                    Several fields don't match, including brand name, product type, and missing warning.
+                </p>
+                
+                <div class="demo-preview">
+                    <div class="form-data"><strong>Brand Name:</strong> <span>Kentucky Straight Bourbon</span></div>
+                    <div class="form-data"><strong>Product Type:</strong> <span>Bourbon Whiskey</span></div>
+                    <div class="form-data"><strong>Alcohol:</strong> <span>43%</span></div>
+                    
+                    <div class="label-preview">
+                        <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="300" height="400" fill="#fff8e8"/>
+                            <rect x="50" y="55" width="200" height="45" fill="rgba(239, 68, 68, 0.1)" stroke="#ef4444" stroke-width="2"/>
+                            <text x="150" y="85" font-family="serif" font-size="24" font-weight="bold" fill="#4a2c0f" text-anchor="middle">REBEL BOURBON</text>
+                            <rect x="70" y="125" width="160" height="35" fill="rgba(239, 68, 68, 0.1)" stroke="#ef4444" stroke-width="2"/>
+                            <text x="150" y="150" font-family="serif" font-size="16" fill="#6b4423" text-anchor="middle">Tennessee Whiskey</text>
+                            <text x="150" y="210" font-family="sans-serif" font-size="24" font-weight="bold" fill="#4a2c0f" text-anchor="middle">43% ALC/VOL</text>
+                            <text x="150" y="250" font-family="sans-serif" font-size="14" fill="#6b4423" text-anchor="middle">750 mL</text>
+                            <rect x="30" y="310" width="240" height="60" fill="rgba(239, 68, 68, 0.1)" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,5"/>
+                            <text x="150" y="345" font-family="sans-serif" font-size="12" fill="#ef4444" text-anchor="middle">⚠ WARNING MISSING</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="results-preview">
+                        <div class="result-item">
+                            <span class="x-icon">✗</span>
+                            <span class="result-text">Brand Name mismatch</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="x-icon">✗</span>
+                            <span class="result-text">Product Type mismatch</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="check-icon">✓</span>
+                            <span class="result-text">Alcohol Content matches</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="x-icon">✗</span>
+                            <span class="result-text">Government Warning missing</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="play-button" onclick="playScenario(5)">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
+                    </svg>
+                    Simulate Scenario
+                </button>
+                
+                <div class="animation-container" id="animation-5">
+                    <div class="progress-bar"><div class="progress-fill" id="progress-5"></div></div>
+                    <div class="animation-step"><div class="step-number">1</div><div>Uploading label image...</div></div>
+                    <div class="animation-step"><div class="step-number">2</div><div>Filling form data...</div></div>
+                    <div class="animation-step"><div class="step-number">3</div><div>Analyzing with Claude Vision API...</div></div>
+                    <div class="animation-step"><div class="step-number">4</div><div>Extracting all fields...</div></div>
+                    <div class="animation-step"><div class="step-number">5</div><div>Comparing all data...</div></div>
+                    <div class="animation-step"><div class="step-number">6</div><div>✗ Multiple Errors Found!</div></div>
+                </div>
+            </div>
+            
+            <!-- Scenario 6: Unreadable Image -->
+            <div class="scenario-card" data-scenario="6">
+                <span class="status-badge status-error">✗ Failed</span>
+                <div class="scenario-header">
+                    <div class="scenario-number">6</div>
+                    <h3 class="scenario-title">Unreadable Image</h3>
+                </div>
+                <p class="scenario-description">
+                    The image quality is too poor or blurry for the OCR to extract text reliably.
+                </p>
+                
+                <div class="demo-preview">
+                    <div class="form-data"><strong>Brand Name:</strong> <span>Any Brand</span></div>
+                    <div class="form-data"><strong>Product Type:</strong> <span>Any Type</span></div>
+                    <div class="form-data"><strong>Alcohol:</strong> <span>40%</span></div>
+                    
+                    <div class="label-preview">
+                        <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <filter id="blur">
+                                    <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+                                </filter>
+                            </defs>
+                            <rect width="300" height="400" fill="#e8e8e8"/>
+                            <g filter="url(#blur)">
+                                <text x="150" y="90" font-family="serif" font-size="28" fill="#666" text-anchor="middle">??????</text>
+                                <text x="150" y="150" font-family="serif" font-size="18" fill="#888" text-anchor="middle">??????</text>
+                                <text x="150" y="210" font-family="sans-serif" font-size="24" fill="#666" text-anchor="middle">??%</text>
+                            </g>
+                            <text x="150" y="320" font-family="sans-serif" font-size="16" fill="#ef4444" text-anchor="middle">⚠ IMAGE TOO BLURRY</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="results-preview">
+                        <div class="result-item">
+                            <span class="x-icon">✗</span>
+                            <span class="result-text">Unable to read label text</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="x-icon">✗</span>
+                            <span class="result-text">Please upload a clearer image</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="play-button" onclick="playScenario(6)">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
+                    </svg>
+                    Simulate Scenario
+                </button>
+                
+                <div class="animation-container" id="animation-6">
+                    <div class="progress-bar"><div class="progress-fill" id="progress-6"></div></div>
+                    <div class="animation-step"><div class="step-number">1</div><div>Uploading blurry image...</div></div>
+                    <div class="animation-step"><div class="step-number">2</div><div>Filling form data...</div></div>
+                    <div class="animation-step"><div class="step-number">3</div><div>Analyzing with Claude Vision API...</div></div>
+                    <div class="animation-step"><div class="step-number">4</div><div>Attempting text extraction...</div></div>
+                    <div class="animation-step"><div class="step-number">5</div><div>Quality check failed...</div></div>
+                    <div class="animation-step"><div class="step-number">6</div><div>✗ Image Unreadable!</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function playScenario(scenarioNum) {
+            const container = document.getElementById(`animation-${scenarioNum}`);
+            const progressBar = document.getElementById(`progress-${scenarioNum}`);
+            const steps = container.querySelectorAll('.animation-step');
+            
+            // Show animation container
+            container.classList.add('active');
+            
+            // Reset all steps
+            steps.forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            progressBar.style.width = '0%';
+            
+            // Animate steps
+            let currentStep = 0;
+            const interval = setInterval(() => {
+                if (currentStep > 0) {
+                    steps[currentStep - 1].classList.remove('active');
+                    steps[currentStep - 1].classList.add('completed');
+                }
+                
+                if (currentStep < steps.length) {
+                    steps[currentStep].classList.add('active');
+                    progressBar.style.width = ((currentStep + 1) / steps.length * 100) + '%';
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                    steps[steps.length - 1].classList.remove('active');
+                    steps[steps.length - 1].classList.add('completed');
+                }
+            }, 800);
+        }
+    </script>
+</body>
+</html>
