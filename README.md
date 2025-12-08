@@ -64,7 +64,7 @@ This application simulates the TTB (Alcohol and Tobacco Tax and Trade Bureau) la
 - API calls require network connection
 
 ## Deployment
-Live demo: [Your deployed URL here]
+Live demo: https://hamilton-1789-ttb.netlify.app/
 
 ## Future Enhancements
 - Support for multiple beverage types with type-specific rules
