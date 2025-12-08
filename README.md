@@ -65,6 +65,11 @@ This application simulates the TTB (Alcohol and Tobacco Tax and Trade Bureau) la
 
 ## Deployment
 Live demo: https://hamilton-1789-ttb.netlify.app/
+Testing Scenarios https://preeminent-fox-8a1972.netlify.app
+   -Golden Case
+   -Mismatched Text
+   -Missing Government Warning
+   -Missing or Blurry Photo
 
 ## Future Enhancements
 - Support for multiple beverage types with type-specific rules
